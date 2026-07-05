@@ -61,7 +61,7 @@ public class StravaActivity {
     private Double maxSpeed;
     private Boolean hasKudoed;
     private Boolean hideFromHome;
-    private String gearId;
+    private String shoeId;
 
     private Double kilojoules;
     private Double averageWatts;
@@ -390,12 +390,12 @@ public class StravaActivity {
         this.hideFromHome = hideFromHome;
     }
 
-    public String getGearId() {
-        return gearId;
+    public String getShoeId() {
+        return shoeId;
     }
 
-    public void setGearId(String gearId) {
-        this.gearId = gearId;
+    public void setShoeId(String shoeId) {
+        this.shoeId = shoeId;
     }
 
     public Double getKilojoules() {

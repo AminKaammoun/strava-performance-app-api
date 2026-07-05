@@ -161,7 +161,7 @@ public class StravaService {
         activity.setMaxSpeed(getDouble(raw, "max_speed"));
         activity.setHasKudoed(getBoolean(raw, "has_kudoed"));
         activity.setHideFromHome(getBoolean(raw, "hide_from_home"));
-        activity.setGearId(getString(raw, "gear_id"));
+        activity.setShoeId(getString(raw, "shoe_id"));
 
         activity.setKilojoules(getDouble(raw, "kilojoules"));
         activity.setAverageWatts(getDouble(raw, "average_watts"));
