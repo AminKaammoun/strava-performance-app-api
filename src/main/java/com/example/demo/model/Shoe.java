@@ -1,37 +1,41 @@
 package com.example.demo.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 
 @Entity
 public class Shoe {
 
+    // Strava's own gear id (e.g. "g12345678987655") — used as-is so saving
+    // re-uses the row (upsert), same pattern as StravaActivity's id.
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @NotBlank(message = "Name is required")
-    private String name; // e.g. "Nike Pegasus 40"
+    // --- Fields synced from Strava's /athlete endpoint (summary gear) ---
+    // These are overwritten every sync; don't hand-edit them, they won't stick.
+    private String name; // the nickname the athlete gave it in Strava, e.g. "adidas"
 
+    @Column(name = "is_primary")
+    private Boolean primary;
+    private Integer resourceState;
+    private Double distanceMeters; // total logged distance, straight from Strava
+
+    // --- Manual/local-only fields — Strava's summary gear response doesn't
+    // include these, so they're yours to fill in and are left untouched by sync ---
     private String brand;
     private String type; // SHOES, BIKE, WATCH, OTHER — kept as a plain string for flexibility
-
     private LocalDate purchaseDate;
     private boolean retired = false;
-    private Double totalDistanceKm; // manually tracked or updated as you log races/runs with this shoe
-
     private String notes;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -41,6 +45,30 @@ public class Shoe {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public Integer getResourceState() {
+        return resourceState;
+    }
+
+    public void setResourceState(Integer resourceState) {
+        this.resourceState = resourceState;
+    }
+
+    public Double getDistanceMeters() {
+        return distanceMeters;
+    }
+
+    public void setDistanceMeters(Double distanceMeters) {
+        this.distanceMeters = distanceMeters;
     }
 
     public String getBrand() {
@@ -73,14 +101,6 @@ public class Shoe {
 
     public void setRetired(boolean retired) {
         this.retired = retired;
-    }
-
-    public Double getTotalDistanceKm() {
-        return totalDistanceKm;
-    }
-
-    public void setTotalDistanceKm(Double totalDistanceKm) {
-        this.totalDistanceKm = totalDistanceKm;
     }
 
     public String getNotes() {

@@ -12,7 +12,7 @@ public class RaceBo {
     private String cityName; // convenience, read-only
     private String countryName; // convenience, read-only (via city -> country)
 
-    private Long shoeId;
+    private String shoeId;
     private String shoeName; // convenience, read-only
 
     private Long stravaActivityId;
@@ -83,11 +83,11 @@ public class RaceBo {
         this.countryName = countryName;
     }
 
-    public Long getShoeId() {
+    public String getShoeId() {
         return shoeId;
     }
 
-    public void setShoeId(Long shoeId) {
+    public void setShoeId(String shoeId) {
         this.shoeId = shoeId;
     }
 

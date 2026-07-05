@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.demo.model.Shoe;
 import com.example.demo.model.Strava.StravaActivity;
 
 import java.time.Duration;
@@ -79,6 +80,52 @@ public class StravaService {
         }
 
         return activities;
+    }
+
+    /**
+     * Returns the athlete's shoes only (bikes are fetched by the same Strava
+     * endpoint but are intentionally dropped here — we don't track bikes).
+     * Strava's /athlete endpoint only returns "summary" gear fields (id, name,
+     * primary, resource_state, distance) — brand/model aren't available
+     * without an extra GET /gear/{id} call per shoe, which we're skipping.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Shoe> getShoes() {
+        String accessToken = getAccessToken();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                "https://www.strava.com/api/v3/athlete",
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {
+                });
+
+        Map<String, Object> payload = response.getBody();
+        if (payload == null) {
+            return List.of();
+        }
+
+        List<Map<String, Object>> shoes = (List<Map<String, Object>>) payload.getOrDefault("shoes", List.of());
+        List<Shoe> result = new ArrayList<>();
+        for (Map<String, Object> raw : shoes) {
+            result.add(mapShoe(raw));
+        }
+        return result;
+    }
+
+    private Shoe mapShoe(Map<String, Object> raw) {
+        Shoe shoe = new Shoe();
+        shoe.setId(getString(raw, "id"));
+        shoe.setName(getString(raw, "name"));
+        shoe.setPrimary(getBoolean(raw, "primary"));
+        shoe.setResourceState(getInteger(raw, "resource_state"));
+        shoe.setDistanceMeters(getDouble(raw, "distance"));
+        return shoe;
     }
 
     private String getAccessToken() {
@@ -159,9 +206,13 @@ public class StravaService {
 
         activity.setAverageSpeed(getDouble(raw, "average_speed"));
         activity.setMaxSpeed(getDouble(raw, "max_speed"));
+        activity.setAverageCadence(getDouble(raw, "average_cadence"));
+        activity.setAverageTemp(getDouble(raw, "average_temp"));
         activity.setHasKudoed(getBoolean(raw, "has_kudoed"));
         activity.setHideFromHome(getBoolean(raw, "hide_from_home"));
-        activity.setShoeId(getString(raw, "shoe_id"));
+        // Strava's field is "gear_id", not "shoe_id" — this was previously
+        // reading a key that doesn't exist and always came back null.
+        activity.setGearId(getString(raw, "gear_id"));
 
         activity.setKilojoules(getDouble(raw, "kilojoules"));
         activity.setAverageWatts(getDouble(raw, "average_watts"));
@@ -174,6 +225,15 @@ public class StravaService {
         activity.setMaxHeartrate(getDouble(raw, "max_heartrate"));
 
         activity.setPrCount(getInteger(raw, "pr_count"));
+        activity.setSufferScore(getDouble(raw, "suffer_score"));
+        activity.setFromAcceptedTag(getBoolean(raw, "from_accepted_tag"));
+
+        // Detail-only fields: not present on the list endpoint at all, only on
+        // a per-activity GET /activities/{id}, which we deliberately don't
+        // call here (would be one extra request per activity). Left null.
+        activity.setCalories(null);
+        activity.setDeviceName(null);
+        activity.setEmbedToken(null);
 
         activity.setAthleteId(athleteId);
         activity.setDescription(buildDescription(activity));

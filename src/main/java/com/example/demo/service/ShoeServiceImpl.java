@@ -26,16 +26,18 @@ public class ShoeServiceImpl implements ShoeService {
         return shoeMapper.toBo(shoeRepository.save(entity));
     }
 
+    // Only touches the manual/local-only fields. name/primary/resourceState/
+    // distanceMeters come from Strava and are overwritten on the next sync
+    // regardless, so letting a manual edit touch them would just be
+    // overwritten and confusing in the meantime.
     @Override
-    public ShoeBo update(Long id, ShoeBo bo) {
+    public ShoeBo update(String id, ShoeBo bo) {
         Shoe existing = shoeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shoe not found"));
-        existing.setName(bo.getName());
         existing.setBrand(bo.getBrand());
         existing.setType(bo.getType());
         existing.setPurchaseDate(bo.getPurchaseDate());
         existing.setRetired(bo.isRetired());
-        existing.setTotalDistanceKm(bo.getTotalDistanceKm());
         existing.setNotes(bo.getNotes());
         return shoeMapper.toBo(shoeRepository.save(existing));
     }
@@ -48,14 +50,14 @@ public class ShoeServiceImpl implements ShoeService {
     }
 
     @Override
-    public ShoeBo findById(Long id) {
+    public ShoeBo findById(String id) {
         return shoeRepository.findById(id)
                 .map(shoeMapper::toBo)
                 .orElseThrow(() -> new RuntimeException("Shoe not found"));
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         shoeRepository.deleteById(id);
     }
 }

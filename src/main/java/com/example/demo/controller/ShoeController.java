@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/shoe")
-public class ShoeController extends GenericRestController<ShoeBo, Long, ShoeService> {
+public class ShoeController extends GenericRestController<ShoeBo, String, ShoeService> {
 
     public ShoeController(ShoeService shoeService) {
         super(shoeService);

@@ -3,23 +3,29 @@ package com.example.demo.model;
 import java.time.LocalDate;
 
 public class ShoeBo {
-    private Long id;
+    private String id;
+
+    // Synced from Strava — read-only from the client's point of view.
     private String name;
+    private Boolean primary;
+    private Integer resourceState;
+    private Double distanceMeters;
+
+    // Manual/local-only fields.
     private String brand;
     private String type;
     private LocalDate purchaseDate;
     private boolean retired;
-    private Double totalDistanceKm;
     private String notes;
 
     public ShoeBo() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -29,6 +35,30 @@ public class ShoeBo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public Integer getResourceState() {
+        return resourceState;
+    }
+
+    public void setResourceState(Integer resourceState) {
+        this.resourceState = resourceState;
+    }
+
+    public Double getDistanceMeters() {
+        return distanceMeters;
+    }
+
+    public void setDistanceMeters(Double distanceMeters) {
+        this.distanceMeters = distanceMeters;
     }
 
     public String getBrand() {
@@ -61,14 +91,6 @@ public class ShoeBo {
 
     public void setRetired(boolean retired) {
         this.retired = retired;
-    }
-
-    public Double getTotalDistanceKm() {
-        return totalDistanceKm;
-    }
-
-    public void setTotalDistanceKm(Double totalDistanceKm) {
-        this.totalDistanceKm = totalDistanceKm;
     }
 
     public String getNotes() {

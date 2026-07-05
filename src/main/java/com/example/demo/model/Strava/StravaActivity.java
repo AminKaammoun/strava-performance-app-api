@@ -1,9 +1,16 @@
 package com.example.demo.model.Strava;
 
+import com.example.demo.model.Shoe;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
@@ -59,9 +66,24 @@ public class StravaActivity {
 
     private Double averageSpeed;
     private Double maxSpeed;
+    private Double averageCadence;
+    private Double averageTemp;
     private Boolean hasKudoed;
     private Boolean hideFromHome;
-    private String shoeId;
+
+    // Strava's "gear_id" — id of the bike or shoe used. Kept as a plain column
+    // (not a hard FK) so activity sync never fails or blocks on shoe sync order.
+    @Column(name = "gear_id")
+    private String gearId;
+
+    // Read-only navigation to our own Shoe table via gearId. Populated by
+    // Hibernate on read only — never written to directly (insertable/updatable
+    // = false), and NO_CONSTRAINT so there's no DB-level FK to worry about if
+    // the gear happens to be a bike (not stored) or hasn't been synced yet.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gear_id", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnore
+    private Shoe shoe;
 
     private Double kilojoules;
     private Double averageWatts;
@@ -74,6 +96,17 @@ public class StravaActivity {
     private Double maxHeartrate;
 
     private Integer prCount;
+    private Double sufferScore;
+    private Boolean fromAcceptedTag;
+
+    // Detail-only fields — Strava never returns these on the activity LIST
+    // endpoint we sync from, only on a per-activity GET. We're not making
+    // that extra call per activity (see StravaService), so these are always
+    // null. Kept as columns anyway so the "all columns" shape is complete and
+    // ready to populate later without another migration.
+    private Double calories;
+    private String deviceName;
+    private String embedToken;
 
     private String athleteId; // our configured athlete, not Strava's nested athlete object
     private String description;
@@ -374,6 +407,22 @@ public class StravaActivity {
         this.maxSpeed = maxSpeed;
     }
 
+    public Double getAverageCadence() {
+        return averageCadence;
+    }
+
+    public void setAverageCadence(Double averageCadence) {
+        this.averageCadence = averageCadence;
+    }
+
+    public Double getAverageTemp() {
+        return averageTemp;
+    }
+
+    public void setAverageTemp(Double averageTemp) {
+        this.averageTemp = averageTemp;
+    }
+
     public Boolean getHasKudoed() {
         return hasKudoed;
     }
@@ -390,12 +439,20 @@ public class StravaActivity {
         this.hideFromHome = hideFromHome;
     }
 
-    public String getShoeId() {
-        return shoeId;
+    public String getGearId() {
+        return gearId;
     }
 
-    public void setShoeId(String shoeId) {
-        this.shoeId = shoeId;
+    public void setGearId(String gearId) {
+        this.gearId = gearId;
+    }
+
+    public Shoe getShoe() {
+        return shoe;
+    }
+
+    public void setShoe(Shoe shoe) {
+        this.shoe = shoe;
     }
 
     public Double getKilojoules() {
@@ -468,6 +525,46 @@ public class StravaActivity {
 
     public void setPrCount(Integer prCount) {
         this.prCount = prCount;
+    }
+
+    public Double getSufferScore() {
+        return sufferScore;
+    }
+
+    public void setSufferScore(Double sufferScore) {
+        this.sufferScore = sufferScore;
+    }
+
+    public Boolean getFromAcceptedTag() {
+        return fromAcceptedTag;
+    }
+
+    public void setFromAcceptedTag(Boolean fromAcceptedTag) {
+        this.fromAcceptedTag = fromAcceptedTag;
+    }
+
+    public Double getCalories() {
+        return calories;
+    }
+
+    public void setCalories(Double calories) {
+        this.calories = calories;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getEmbedToken() {
+        return embedToken;
+    }
+
+    public void setEmbedToken(String embedToken) {
+        this.embedToken = embedToken;
     }
 
     public String getAthleteId() {

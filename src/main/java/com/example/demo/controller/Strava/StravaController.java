@@ -1,5 +1,6 @@
 package com.example.demo.controller.Strava;
 
+import com.example.demo.model.Shoe;
 import com.example.demo.model.Strava.StravaActivity;
 import com.example.demo.model.Strava.SyncStatus;
 import com.example.demo.service.Strava.StravaSyncService;
@@ -38,5 +39,23 @@ public class StravaController {
     @PostMapping("/sync")
     public ResponseEntity<SyncStatus> sync() {
         return ResponseEntity.ok(syncService.syncNow());
+    }
+
+    // Frontend reads ALWAYS hit this — reads from our own DB, never Strava
+    // directly.
+    @GetMapping("/shoes")
+    public ResponseEntity<List<Shoe>> getShoes() {
+        return ResponseEntity.ok(syncService.getStoredShoes());
+    }
+
+    @GetMapping("/shoes/sync-status")
+    public ResponseEntity<SyncStatus> getShoesSyncStatus() {
+        return ResponseEntity.ok(syncService.getShoesStatus());
+    }
+
+    // The ONLY endpoint that calls out to Strava for gear.
+    @PostMapping("/shoes/sync")
+    public ResponseEntity<SyncStatus> syncShoes() {
+        return ResponseEntity.ok(syncService.syncShoesNow());
     }
 }
