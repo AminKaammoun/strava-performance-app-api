@@ -116,7 +116,6 @@ public class StravaService {
         activity.setName(getString(raw, "name"));
         activity.setDistance(getDouble(raw, "distance"));
         activity.setMovingTime(getLong(raw, "moving_time"));
-        activity.setAvgHeartRate(getDouble(raw, "average_heartrate"));
         activity.setElapsedTime(getLong(raw, "elapsed_time"));
         activity.setTotalElevationGain(getDouble(raw, "total_elevation_gain"));
         activity.setElevHigh(getDouble(raw, "elev_high"));

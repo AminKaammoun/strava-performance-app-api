@@ -21,7 +21,6 @@ public class StravaActivity {
     private Double distance;
     private Long movingTime;
     private Long elapsedTime;
-    private Double avgHeartRate;
     private Double totalElevationGain;
     private Double elevHigh;
     private Double elevLow;
@@ -131,16 +130,8 @@ public class StravaActivity {
         return movingTime;
     }
 
-    public Double getAvgHeartRate() {
-        return avgHeartRate;
-    }
-
     public void setMovingTime(Long movingTime) {
         this.movingTime = movingTime;
-    }
-
-    public void setAvgHeartRate(Double avgHeartRate) {
-        this.avgHeartRate = avgHeartRate;
     }
 
     public Long getElapsedTime() {
