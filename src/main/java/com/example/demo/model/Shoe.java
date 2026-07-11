@@ -31,6 +31,10 @@ public class Shoe {
     private boolean retired = false;
     private String notes;
 
+    // Distance at which this shoe should be considered for retirement. Nullable —
+    // AnalyticsService falls back to a sensible default (600km) when not set.
+    private Double mileageLimitKm;
+
     public String getId() {
         return id;
     }
@@ -109,5 +113,13 @@ public class Shoe {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Double getMileageLimitKm() {
+        return mileageLimitKm;
+    }
+
+    public void setMileageLimitKm(Double mileageLimitKm) {
+        this.mileageLimitKm = mileageLimitKm;
     }
 }
